@@ -11,6 +11,10 @@
     margin: 0;
 }
 
+.reveal.sls-intro section .no-padding {
+    padding: 0;
+}
+
 .reveal.sls-intro section .no-background {
     background: none;
     box-shadow: none;

@@ -23,6 +23,236 @@
 				<section>
 					<h1 class="no-text-transform primary-color">Cloud4WebDevs</h1>
 				</section>
+				<section>
+					<h1 class="no-text-transform secondary-color">Part 1</h1>
+					<h3 class="no-text-transform secondary-color">AWS Account, IAM, AWS Console / CLI</h3>
+				</section>
+				<section>
+					<ol>
+						<li><a target="_blank" href="https://aws.amazon.com/free">Sign up for a free AWS Account</a></li>
+						<li><a target="_blank" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html">Create your first IAM admin user</a></li>
+						<li>Create another admin user with <mark>programmatic access</mark></li>
+						<li>IAM crash course: users, groups and policies</li>
+					</ol>
+				</section>
+				<section>
+					<section>
+						<h1 class="no-text-transform secondary-color">Part 2</h1>
+						<h3 class="no-text-transform secondary-color">Set up your web app for development</h3>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Prerequisites</h3>
+						<ul>
+							<li><a target="_blank" href="https://git-scm.com/downloads"><mark>Git</mark> client</a></li>
+							<li><mark>Node.js</mark> along with <mark>npm</mark> (<a target="_blank" href="https://nodejs.org/en/download/">active LTS version</a>)</li>
+							<li><mark>Java</mark> Development Kit (JDK) (<a target="_blank" href="https://adoptium.net/?variant=openjdk11">active LTS version</a>)</li>
+						</ul>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Backend</h3>
+						<ol>
+							<li><mark>Clone</mark> the <a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend">backend Git repo</a> from Github:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">git clone https://github.com/cloud-4-web-devs/my-thai-star-backend.git backend</code></pre>
+							</li>
+							<li><mark>Build</mark> the backend using Maven (<a target="_blank" href="https://github.com/takari/maven-wrapper">Wrapper</a>):
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">
+									cd backend
+									./mvnw clean package
+								</code></pre>
+							</li>
+							<li><mark>Run</mark> the backend using <a target="_blank" href="https://spring.io/projects/spring-boot">Spring Boot</a>:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">
+									cd configuration/springboot
+									java -jar target/springboot-1.0.0-SNAPSHOT.jar
+								</code></pre>
+							</li>
+							<li>Click <a target="_blank" href="http://localhost:7777/booking/tables">here</a> to <mark>test</mark> the backend</li>
+						</ol>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Frontend</h3>
+						<ol>
+							<li><mark>Clone</mark> the <a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-frontend">frontend Git repo</a> from Github:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">git clone https://github.com/cloud-4-web-devs/my-thai-star-frontend.git frontend</code></pre>
+							</li>
+							<li><mark>Download dependencies</mark> using npm:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">
+									cd frontend
+									npm install
+								</code></pre>
+							</li>
+							<li><mark>Start</mark> the frontend using npm:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">
+									npm start
+								</code></pre>
+							</li>
+							<li>Click <a target="_blank" href="http://localhost:4200">here</a> to <mark>test</mark> the frontend</li>
+						</ol>
+					</section>
+				</section>
+				<section>
+					<h2 class="no-text-transform secondary-color">You build it, you <span class="primary-color">run</span> it.</h2>
+					<h2 class="no-text-transform secondary-color">OK, but how?</h2>
+				</section>
+				<section>
+					<ol>
+						<li>Virtual machines (EC2 / IaaS)  -> <mark>We won't cover</mark></li>
+						<li>Containers using ECS and EKS -> <mark>Yes!</mark></li>
+						<li>Serverless -> <mark>Yes!</mark></li>
+						<li>Amplify -> <mark>Yes!</mark></li>
+					</ol>
+				</section>
+                <section>
+                    <section>
+                        <h1 class="no-text-transform secondary-color">Part 3</h1>
+                        <h3 class="no-text-transform secondary-color">Running on ECS/Fargate</h3>
+                    </section>
+                    <section>
+                        <h1 class="no-text-transform secondary-color">Dockerize your web app</h1>
+                    </section>
+                    <section>
+                        <h3 class="no-text-transform primary-color">Backend: <code class="secondary-color">PostgreSQL</code></h3>
+                        <p style="display: flex"><small>configuration/springboot/pom.xml</small></p>
+                        <pre style="margin: 0"><code class="hljs xml" data-trim="">
+&lt;dependency&gt;
+  &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+  &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+  &lt;scope&gt;runtime&lt;/scope&gt;
+&lt;/dependency&gt;
+								</code></pre>
+                        <p style="display: flex"><small>configuration/springboot/src/main/resources/application-postgres.yaml</small></p>
+                        <pre style="margin: 0"><code class="hljs yaml" data-trim="">
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQL81Dialect
+								</code></pre>
+                    </section>
+                    <section>
+                        <h3 class="no-text-transform primary-color">Backend: <code class="secondary-color">Dockerfile</code></h3>
+                        <p style="display: flex"><small>configuration/springboot/Dockerfile</small></p>
+                        <pre style="margin: 0"><code class="hljs docker" data-trim="">
+FROM openjdk:11
+ARG jarFile=target/*.jar
+COPY ${jarFile} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h3 class="no-text-transform primary-color">Backend: <code class="secondary-color">docker-compose.yml</code></h3>
+                        <p style="display: flex"><small>configuration/springboot/src/main/resources/application-postgres.yaml</small></p>
+                        <pre style="margin: 0"><code class="hljs yaml" data-trim="">
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+    image: marekmatczak/mts-backend
+    entrypoint:
+     - java
+     - -jar
+     - -Dspring.profiles.active=postgres
+     - /app.jar
+     - --server.port=80
+     - --spring.datasource.url=jdbc:postgresql://db:5432/postgres
+     - --spring.datasource.username=postgres
+     - --spring.datasource.password=secret
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: secret
+								</code></pre>
+                    </section>
+                    <section>
+                        <h3 class="no-text-transform secondary-color">Backend: build and run</h3>
+                        <pre style="margin: 0"><code class="hljs bash" data-trim="">
+./mvnw clean package
+cd configuration/springboot
+docker compose up
+								</code></pre>
+                    </section>
+					<section data-auto-animate>
+						<h3 class="no-text-transform primary-color">Frontend: <code class="secondary-color">caching and client routing</code></h3>
+						<p style="display: flex"><small>nginx/default.conf</small></p>
+						<pre data-id="code-animation" style="margin: 0"><code class="hljs yaml" data-trim="">
+server {
+
+  location ~ /index.html|.*\.json$ {
+    # DO NOT let borwsers cache index.html and JSON files
+    expires -1;
+    add_header Cache-Control 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+  }
+
+  location ~ .*\.css$|.*\.js$ {
+    # let browsers cache CSS and JS files
+    add_header Cache-Control 'max-age=31449600'; # one year
+  }
+
+  location / {
+    # necessary for handling client side routing (History API)
+    try_files $uri $uri/ /index.html;
+  }
+}
+								</code></pre>
+					</section>
+					<section data-auto-animate>
+						<h2 data-id="code-title">Pretty Code</h2>
+						<pre data-id="code-animation"><code class="hljs" data-trim data-line-numbers>
+						import React, { useState } from 'react';
+
+						function Example() {
+						  const [count, setCount] = useState(0);
+
+						  return (
+						    ...
+						  );
+						}
+					</code></pre>
+						<p>Code syntax highlighting courtesy of <a href="https://highlightjs.org/usage/">highlight.js</a>.</p>
+					</section>
+					<section>
+						<h3>dsdsd</h3>
+					</section>
+                </section>
+
+				<section>
+					<ol>
+						<li>Overview of VPC (private, public), Elastic Load Balancers, ECS, etc. </li>
+						<li><a href="https://aws.amazon.com/blogs/containers/deploy-applications-on-amazon-ecs-using-docker-compose/">Use docker compose...</a></li>
+						<li><a href="https://aws.amazon.com/blogs/containers/automated-software-delivery-using-docker-compose-and-amazon-ecs/">Automate it</a></li>
+					</ol>
+				</section>
+				<section>
+					<h1 class="no-text-transform secondary-color">Part 5</h1>
+					<h3 class="no-text-transform secondary-color">Running on EKS</h3>
+				</section>
+				<section>
+					<ol>
+						<li>How to use EKS</li>
+						<li>How to automate it</li>
+					</ol>
+				</section>
+				<section>
+					<h1 class="no-text-transform secondary-color">Part 6</h1>
+					<h3 class="no-text-transform secondary-color">Running as serverless</h3>
+				</section>
+				<section>
+					<ol>
+						<li>Overview of serverless services (Lambda, API Gateway, S3, CloudFront, etc.)</li>
+						<li>Using SAM or the Serverless Framework to deploy the backend</li>
+						<li>Using Amplify to deploy the frontend</li>
+					</ol>
+				</section>
 			</div>
 		</div>
 
