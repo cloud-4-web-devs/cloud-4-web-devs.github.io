@@ -43,9 +43,17 @@
 					<section>
 						<h3 class="no-text-transform secondary-color">Prerequisites</h3>
 						<ul>
+							<li><mark>IDE</mark> (<a target="_blank" href="https://www.jetbrains.com/idea/download/#section=windows">e.g. community IntelliJ</a>)</li>
 							<li><a target="_blank" href="https://git-scm.com/downloads"><mark>Git</mark> client</a></li>
 							<li><mark>Node.js</mark> along with <mark>npm</mark> (<a target="_blank" href="https://nodejs.org/en/download/">active LTS version</a>)</li>
-							<li><mark>Java</mark> Development Kit (JDK) (<a target="_blank" href="https://adoptium.net/?variant=openjdk11">active LTS version</a>)</li>
+							<li><mark>Java</mark> Development Kit (JDK) (<a target="_blank" href="https://adoptium.net/?variant=openjdk11">active LTS version</a>,
+								<a target="_blank" href="https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html">Amazon Coretto</a>)
+							</li>
+							<li><mark>AWS cli</mark> (<a target="_blank" href="https://aws.amazon.com/cli/">link</a>)</li>
+							<li><mark>Docker</mark> (<a target="_blank" href="https://www.jetbrains.com/idea/download/#section=windows">link</a>)</li>
+							<li><mark>AWS CDK</mark> (installation through npm)
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">npm install -g aws-cdk</code></pre>
+							</li>
 						</ul>
 					</section>
 					<section>
@@ -105,10 +113,7 @@
                 <section>
                     <section>
                         <h1 class="no-text-transform secondary-color">Part 3</h1>
-                        <h3 class="no-text-transform secondary-color">Running on ECS/Fargate</h3>
-                    </section>
-                    <section>
-                        <h1 class="no-text-transform secondary-color">Dockerize your web app</h1>
+                        <h3 class="no-text-transform secondary-color">Dockerizing app</h3>
                     </section>
                     <section>
                         <h3 class="no-text-transform primary-color">Backend: <code class="secondary-color">PostgreSQL</code></h3>
@@ -224,7 +229,54 @@ server {
 						<h3>dsdsd</h3>
 					</section>
                 </section>
-
+				<section>
+					<section>
+						<h1 class="no-text-transform secondary-color">Part 4</h1>
+						<h3 class="no-text-transform secondary-color">Building infrastructure on AWS</h3>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Checking Prerequisites</h3>
+						<ul>
+							<li>check for aws, cdk, docker
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">aws --version</code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk --version</code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">docker --version</code></pre>
+							</li>
+							<li>adding credentials from admin user with programmatic access
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">C:\Users\[user_name]\.aws\credentials</code></pre>
+						</ul>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Building project</h3>
+						<ol>
+							<li>Create directory for a project:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">mkdir my-project</code></pre>
+							</li>
+							<li>Go to this directory:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">cd my-project</code></pre>
+							</li>
+							<li>Initialize project with programming language of your choice:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk init app --language java</code></pre>
+							</li>
+						</ol>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Now we go to our project</h3>
+						<p style="display: flex"><small>Here is example how we have connected cdk to backend</small></p>
+						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/03-initial-structure-on-aws">branch-03</a></small></p>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Adding VPC</h3>
+						<p style="display: flex"><small>Basic building block in AWS is VPC</small></p>
+						<pre style="margin: 0"><code class="java" data-trim="">
+							Vpc.Builder.create(this, "vpc")
+								.vpcName("vpc-awstraining")
+								.maxAzs(3)  // Default is all AZs in region
+								.build();</code>
+						</pre>
+						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/04-vpc-created">branch-04</a></small></p>
+					</section>
+				</section>
 				<section>
 					<ol>
 						<li>Overview of VPC (private, public), Elastic Load Balancers, ECS, etc. </li>
