@@ -242,7 +242,7 @@ server {
 								<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk --version</code></pre>
 								<pre style="margin: 0"><code class="hljs bash" data-trim="">docker --version</code></pre>
 							</li>
-							<li>adding credentials from admin user with programmatic access
+							<li>adding credentials from technical user (admin policy) with programmatic access
 								<pre style="margin: 0"><code class="hljs bash" data-trim="">C:\Users\[user_name]\.aws\credentials</code></pre>
 						</ul>
 					</section>
@@ -262,12 +262,12 @@ server {
 					</section>
 					<section>
 						<h3 class="no-text-transform secondary-color">Now we go to our project</h3>
-						<p style="display: flex"><small>Here is example how we have connected cdk to backend</small></p>
+						<p style="display: flex"><small>Here is an example how we have connected Cloud Development Kit to our project (backend)</small></p>
 						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/03-initial-structure-on-aws">branch-03</a></small></p>
 					</section>
 					<section>
 						<h3 class="no-text-transform secondary-color">Adding VPC</h3>
-						<p style="display: flex"><small>Basic building block in AWS is VPC</small></p>
+						<p style="display: flex"><small>Basic building block in AWS is Virtual Private Cloud</small></p>
 						<pre style="margin: 0"><code class="java" data-trim="">
 							Vpc.Builder.create(this, "vpc")
 								.vpcName("vpc-awstraining")
@@ -275,6 +275,75 @@ server {
 								.build();</code>
 						</pre>
 						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/04-vpc-created">branch-04</a></small></p>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">How to build infrastructure in AWS</h3>
+						<ol>
+							<li>Connect code with AWS:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk bootstrap --profile awstraning</code></pre>
+							</li>
+							<li>Build and deploy in Cloudformation:
+							</li>
+							<ul>
+								<li>build output json:
+									<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk synth</code></pre>
+								</li>
+								<li>manually upload output json to Cloudformation:
+									<pre style="margin: 0"><code class="hljs bash" data-trim="">Take 'infra.template.json' and upload it</code></pre>
+								</li>
+								<li>or build and deploy in one step:
+									<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk deploy</code></pre>
+								</li>
+							</ul>
+						</ol>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Adding second module</h3>
+						<p style="display: flex"><small>adding ECR</small></p>
+						<pre style="margin: 0"><code class="java" data-trim="">
+							Please add ECR taking VPC as an example
+							ECR => Elastic Container Registry
+							ECR => repository in which we will upload our application code
+						</code>
+						</pre>
+						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/05-additional-modules-added">branch-05</a></small></p>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Uploading our app code to AWS</h3>
+						<ol>
+							<li>Retrieve an authentication token
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">aws ecr get-login-password --region [your-region] --profile [your-profile] | docker login --username AWS --password-stdin [your-account].dkr.ecr.[your-region].amazonaws.com</code></pre>
+							</li>
+							<li>Build your Docker image:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">docker build -t [your-app-name] .</code></pre>
+							</li>
+							<li>Tag your image:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">docker tag [your-app-name]:latest [your-account].dkr.ecr.[your-region].amazonaws.com/[your-app-name]:latest</code></pre>
+							</li>
+							<li>Push this image:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">docker push [your-account].dkr.ecr.[your-region].amazonaws.com/[your-app-name]:latest</code></pre>
+							</li>
+							<li>All commands are available in AWS console in ECR module</li>
+						</ol>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Adding Fargate service</h3>
+						<p style="display: flex"><small>AWS Fargate is a serverless, pay-as-you-go compute engine that lets you focus on building applications without managing servers. AWS Fargate is compatible with both Amazon Elastic Container Service (ECS) and Amazon Elastic Kubernetes Service (EKS).</small></p>
+						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/06-fargate-service-added">branch-06</a></small></p>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Adding Endpoints</h3>
+						<p style="display: flex">To be able to run AWS Fargate tasks we need to add several endpoints</p>
+						<pre style="margin: 0"><code class="hljs bash" data-trim="">
+							com.amazonaws.REGION.s3
+							com.amazonaws.REGION.ecr.dkr
+							com.amazonaws.REGION.ecr.api
+							com.amazonaws.REGION.logs
+							com.amazonaws.REGION.ssm
+						</code></pre>
+						<p style="display: flex"><small><a target="_blank" href="https://stackoverflow.com/questions/61265108/aws-ecs-fargate-resourceinitializationerror-unable-to-pull-secrets-or-registry">stack overflow</a></small></p>
+						<p style="display: flex"><small><a target="_blank" href="https://aws.amazon.com/blogs/containers/aws-fargate-launches-platform-version-1-4/">aws blog</a></small></p>
+						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/07-endpoints-added">branch-07</a></small></p>
 					</section>
 				</section>
 				<section>
