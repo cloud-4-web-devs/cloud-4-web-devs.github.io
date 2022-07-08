@@ -232,7 +232,7 @@ server {
 				<section>
 					<section>
 						<h1 class="no-text-transform secondary-color">Part 4</h1>
-						<h3 class="no-text-transform secondary-color">Building infrastructure on AWS</h3>
+						<h3 class="no-text-transform secondary-color">Building backend infrastructure on AWS</h3>
 					</section>
 					<section>
 						<h3 class="no-text-transform secondary-color">Checking Prerequisites</h3>
@@ -280,10 +280,12 @@ server {
 						<h3 class="no-text-transform secondary-color">How to build infrastructure in AWS</h3>
 						<ol>
 							<li>Connect code with AWS:
-								<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk bootstrap --profile awstraning</code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">mvn clean package</code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">cd aws-structure</code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk bootstrap --profile cdk</code></pre>
 							</li>
 							<ul>to change default region:
-								<pre style="margin: 0"><code class="hljs bash" data-trim="">export AWS_REGION=[another_region]></code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">export AWS_REGION=[another_region]</code></pre>
 							</ul>
 							<li>Build and deploy in Cloudformation:
 							</li>
@@ -295,7 +297,7 @@ server {
 									<pre style="margin: 0"><code class="hljs bash" data-trim="">Take 'infra.template.json' and upload it</code></pre>
 								</li>
 								<li>or build and deploy in one step:
-									<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk deploy</code></pre>
+									<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk deploy --profile cdk</code></pre>
 								</li>
 							</ul>
 						</ol>
@@ -349,7 +351,87 @@ server {
 							<a target="_blank" href="https://aws.amazon.com/premiumsupport/knowledge-center/ecs-fargate-tasks-pending-state/">aws support</a></small></p>
 						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/07-endpoints-added">branch-07</a></small></p>
 					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Adding Database</h3>
+						<p style="display: flex"><small>AWS Fargate is a serverless, pay-as-you-go compute engine that lets you focus on building applications without managing servers. AWS Fargate is compatible with both Amazon Elastic Container Service (ECS) and Amazon Elastic Kubernetes Service (EKS).</small></p>
+						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/06-fargate-service-added">branch-06</a></small></p>
+					</section>
 				</section>
+				<section>
+					<section>
+						<h1 class="no-text-transform secondary-color">Part 5</h1>
+						<h3 class="no-text-transform secondary-color">Building frontend infrastructure on AWS</h3>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Now we go to frontend project</h3>
+						<p style="display: flex"><small>Here is an example how we have connected Cloud Development Kit to our project (backend)</small></p>
+						<p style="display: flex"><small>We have used following command</small></p>
+						<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk init app --language typescript</code></pre>
+						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-frontend/tree/01-initial-structure-aws">branch-01</a></small></p>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Adding VPC</h3>
+						<p style="display: flex"><small>Basic building block in AWS is Virtual Private Cloud</small></p>
+						<pre style="margin: 0"><code class="typescript" data-trim="">
+							const vpc = new Vpc(this, "vpc-frontend", {
+							  cidr: "20.0.0.0/20",
+							  subnetConfiguration: [
+								{  cidrMask: 24, subnetType: SubnetType.PUBLIC, name: "Public" },
+								{  cidrMask: 24, subnetType: SubnetType.PRIVATE, name: "Private" }
+								],
+							  maxAzs: 3
+							});</code>
+						</pre>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">How to build infrastructure in AWS</h3>
+						<ol>
+							<li>Connect code with AWS:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">npm install -g ng-cli</code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">npm install</code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">npm run build</code></pre>
+							</li>
+							<li>Build and deploy in Cloudformation:
+							</li>
+							<ul>
+								<li>build output json:
+									<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk synth</code></pre>
+								</li>
+								<li>manually upload output json to Cloudformation:
+									<pre style="margin: 0"><code class="hljs bash" data-trim="">Take 'infra.template.json' and upload it</code></pre>
+								</li>
+								<li>or build and deploy in one step:
+									<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk deploy --profile cdk</code></pre>
+								</li>
+							</ul>
+						</ol>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Uploading our app code to AWS</h3>
+						<ol>
+							<li>Retrieve an authentication token
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">aws ecr get-login-password --region [your-region] --profile [your-profile] | docker login --username AWS --password-stdin [your-account].dkr.ecr.[your-region].amazonaws.com</code></pre>
+							</li>
+							<li>Build your Docker image:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">docker build -t [your-app-name] .</code></pre>
+							</li>
+							<li>Tag your image:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">docker tag [your-app-name]:latest [your-account].dkr.ecr.[your-region].amazonaws.com/[your-app-name]:latest</code></pre>
+							</li>
+							<li>Push this image:
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">docker push [your-account].dkr.ecr.[your-region].amazonaws.com/[your-app-name]:latest</code></pre>
+							</li>
+							<li>All commands are available in AWS console in ECR module</li>
+						</ol>
+					</section>
+					<section>
+						<h3 class="no-text-transform secondary-color">Testing our application</h3>
+						<p style="display: flex"><small>To test backend and frontend we can use following links.</small></p>
+						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/06-fargate-service-added">backend</a></small></p>
+					</section>
+
+				</section>
+
 				<section>
 					<ol>
 						<li>Overview of VPC (private, public), Elastic Load Balancers, ECS, etc. </li>
