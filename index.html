@@ -280,9 +280,9 @@ server {
 						<h3 class="no-text-transform secondary-color">How to build infrastructure in AWS</h3>
 						<ol>
 							<li>Connect code with AWS:
-								<pre style="margin: 0"><code class="hljs bash" data-trim="">mvn clean package</code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">./mvnw clean package</code></pre>
 								<pre style="margin: 0"><code class="hljs bash" data-trim="">cd aws-structure</code></pre>
-								<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk bootstrap --profile cdk</code></pre>
+								<pre style="margin: 0"><code class="hljs bash" data-trim="">cdk bootstrap --profile cdk or cdk bootstrap aws://ACCOUNT-NUMBER/REGION --profile cdk</code></pre>
 							</li>
 							<ul>to change default region:
 								<pre style="margin: 0"><code class="hljs bash" data-trim="">export AWS_REGION=[another_region]</code></pre>
@@ -354,8 +354,15 @@ server {
 					<section>
 						<h3 class="no-text-transform secondary-color">Adding Database</h3>
 						<p style="display: flex"><small>AWS Fargate is a serverless, pay-as-you-go compute engine that lets you focus on building applications without managing servers. AWS Fargate is compatible with both Amazon Elastic Container Service (ECS) and Amazon Elastic Kubernetes Service (EKS).</small></p>
-						<p style="display: flex"><small>After successful build of infrastucure we need to adjust database endpoint in  application.yaml</small></p>
-						<pre style="margin: 0"><code class="java" data-trim="">url: jdbc:postgresql://[set-db-endpoint]:5432/postgres</code></pre>
+						<p style="display: flex"><small>During build of infrastructure we need to adjust database endpoint in Secret Manager</small></p>
+						<pre style="margin: 0"><code class="java" data-trim="">{
+  "spring": {
+    "datasource": {
+      "url": "jdbc:postgresql://[set-db-endpoint]]:5432/postgres",
+      "password": "admin5432"
+    }
+  }
+}</code></pre>
 						<p style="display: flex"><small><a target="_blank" href="https://github.com/cloud-4-web-devs/my-thai-star-backend/tree/08-db-added">branch-08</a></small></p>
 					</section>
 					<section>
